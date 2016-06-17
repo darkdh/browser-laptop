@@ -95,6 +95,7 @@ let generateBraveManifest = () => {
     },
     web_accessible_resources: [
       'about-*.html',
+      'flash-placeholder.html',
       'img/favicon.ico'
     ],
     incognito: 'spanning',
