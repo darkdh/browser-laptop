@@ -15,7 +15,7 @@
     })
   }
   // Some pages insert the password form into the DOM after it's loaded
-  var observer = new MutationObserver(function (mutations) {
+  var observer = new window.MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
       if (mutation.addedNodes.length) {
         replaceAdobeLinks()
@@ -30,6 +30,8 @@
     })
   }, 1000)
 })()
+
+const placeholderUrl = 'chrome-extension://mnojpmjdmbbfmejpflffifhffcmidifd/flash-placeholder.html'
 
 /**
  * Whether a src is a .swf file.
@@ -58,6 +60,7 @@ function isSWF (src) {
  * @return {Array.<Element>}
  */
 function getFlashObjects (elem) {
+  console.log('looking for flash objects', elem)
   let results = [] // Array.<{element: Element, origin: string}>
   Array.from(elem.getElementsByTagName('embed')).forEach((el) => {
     let origin = isSWF(el.getAttribute('src'))
@@ -79,6 +82,7 @@ function getFlashObjects (elem) {
     }
     */
     let origin = isSWF(el.getAttribute('data'))
+    console.log('considering obj', el, origin)
     if (origin) {
       results.push({
         element: el,
@@ -141,8 +145,10 @@ var observer = new window.MutationObserver(function (mutations) {
     }
   })
 })
-insertFlashPlaceholders(document.documentElement)
-observer.observe(document.documentElement, {
-  childList: true,
-  attributes: true
-})
+
+setTimeout(() => {
+  insertFlashPlaceholders(document.documentElement)
+  observer.observe(document.documentElement, {
+    childList: true
+  })
+}, 1000)
