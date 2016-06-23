@@ -663,6 +663,16 @@ const searchSelectionMenuItem = (location) => {
 
 function mainTemplateInit (nodeProps, frame) {
   const template = []
+  if (nodeProps.frameURL === 'chrome-extension://mnojpmjdmbbfmejpflffifhffcmidifd/flash-placeholder.html') {
+    template.push({
+      label: locale.translation('allowFlashOnce'),
+      click: () => {}
+    }, {
+      label: locale.translation('allowFlashAlways'),
+      click: () => {}
+    })
+    return template
+  }
 
   if (nodeProps.linkURL !== '') {
     template.push(openInNewTabMenuItem(nodeProps.linkURL, frame.get('isPrivate'), frame.get('partitionNumber'), frame.get('key')),

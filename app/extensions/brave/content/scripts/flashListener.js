@@ -25,8 +25,7 @@
   setTimeout(() => {
     replaceAdobeLinks()
     observer.observe(document.documentElement, {
-      childList: true,
-      attributes: true
+      childList: true
     })
   }, 1000)
 })()
@@ -60,7 +59,6 @@ function isSWF (src) {
  * @return {Array.<Element>}
  */
 function getFlashObjects (elem) {
-  console.log('looking for flash objects', elem)
   let results = [] // Array.<{element: Element, origin: string}>
   Array.from(elem.getElementsByTagName('embed')).forEach((el) => {
     let origin = isSWF(el.getAttribute('src'))
@@ -82,7 +80,6 @@ function getFlashObjects (elem) {
     }
     */
     let origin = isSWF(el.getAttribute('data'))
-    console.log('considering obj', el, origin)
     if (origin) {
       results.push({
         element: el,
@@ -120,7 +117,6 @@ function insertFlashPlaceholders (elem) {
     let pluginRect = el.getBoundingClientRect()
     let height = el.getAttribute('height') || pluginRect.height
     let width = el.getAttribute('width') || pluginRect.width
-    console.log('processing flash object', obj, height, width)
     if (height > minHeight && width > minWidth) {
       let parent = el.parentNode
       if (!parent) {
@@ -132,6 +128,17 @@ function insertFlashPlaceholders (elem) {
       iframe.setAttribute('style', `width: ${width}px; height: ${height}px`)
       iframe.setAttribute('flash-origin', obj.origin)
       parent.replaceChild(iframe, el)
+      // Chromium does not allow posting message to a null origin
+      // Set to '*' since it is not sensitive information
+      iframe.onload = window.setTimeout(() => {
+        console.log('sending message')
+        iframe.contentWindow.postMessage({
+          flashOrigin: obj.origin
+        }, '*')
+      }, 200)
+    } else {
+      // Note when elements are too small so we can improve the heuristic.
+      console.log('got too-small Flash element', obj, height, width)
     }
   })
 }
