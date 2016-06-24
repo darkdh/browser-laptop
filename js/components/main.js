@@ -172,8 +172,6 @@ class Main extends ImmutableComponent {
   }
 
   componentDidMount () {
-    ipc.send(messages.WEB_CONTENTS_INITIALIZED)
-
     this.registerSwipeListener()
     this.registerWindowLevelShortcuts()
 
